@@ -42,6 +42,11 @@ userSchema.pre('save', async function (next) {
   }
 });
 
+// Creamos un método para comparar el password encriptado con el password entrante
+userSchema.methods.comparePassword = async function (password) {
+  return bcrypt.compare(password, this.password);
+};
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
