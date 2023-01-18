@@ -33,7 +33,9 @@ module.exports = (app, nextMain) => {
       if (!comparePassword) {
         return res.status(403).send({ error: 'Contraseña Incorrecta' });
       }
-      return res.status(200).send({ user });
+      const jwToken = jwt.sign({ uid: user._id }, secret);
+      user.password = undefined;
+      return res.status(200).send({ user, token: jwToken });
     } catch (error) {
       return res.status(500).send({ error: error.message });
     }
