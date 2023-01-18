@@ -8,10 +8,27 @@ module.exports = {
       if (users.length > 0) {
         res.status(200).send({ users });
       } else {
-        res.status(404).send({ message: 'no hay usuarios en la DB' });
+        res.status(404).send({ error: 'No hay usuarios en la DB' });
       }
     } catch (error) {
-      res.status(500).send({ message: error.message });
+      res.status(500).send({ error: error.message });
+    }
+  },
+  createUser: async (req, res, next) => {
+    const { email, password, roles } = req.body;
+    if (!email || !password) {
+      return next(400);
+    }
+    try {
+      const user = await User.findOne({ email });
+      if (user) {
+        return res.status(403).send({ error: 'El email ya tiene un usuario registrado' });
+      }
+      // Creamos el Usuario y le pasamos los datos del body
+      const newUser = await User.create({ email, password, roles });
+      res.status(203).send(newUser);
+    } catch (error) {
+      res.status(500).send({ error: error.message });
     }
   },
 };
