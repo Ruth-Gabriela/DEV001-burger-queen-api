@@ -1,6 +1,10 @@
 const path = require('path');
 const { spawn } = require('child_process');
 const kill = require('tree-kill');
+const globalSetup = require("@shelf/jest-mongodb/lib/setup");
+const MongodbMemoryServer = require('mongodb-memory-server').default;
+
+global.__MONGOD__ = MongodbMemoryServer;
 
 const config = require('../config');
 
@@ -60,6 +64,7 @@ const createTestUser = () => fetchAsAdmin('/users', {
     if (resp.status !== 200) {
       throw new Error('Could not create test user');
     }
+    console.log("si")
     return fetch('/auth', { method: 'POST', body: __e2e.testUserCredentials });
   })
   .then((resp) => {
@@ -78,7 +83,6 @@ const checkAdminCredentials = () => fetch('/auth', {
     if (resp.status !== 200) {
       throw new Error('Could not authenticate as admin user');
     }
-
     return resp.json();
   })
   .then(({ token }) => Object.assign(__e2e, { adminToken: token }));
@@ -106,12 +110,11 @@ module.exports = () => new Promise((resolve, reject) => {
   }
 
   // TODO: Configurar DB de tests
+  globalSetup({rootDir: __dirname}).then(()=>{
+    //console.log(global.__MONGOD__);
+    console.info('Staring local server...');
+    const child = spawn("node", [ "index.js", process.env.PORT || 8888], { cwd: path.resolve(__dirname, "../"), stdio: ["ignore", "pipe", "pipe"], env: { PATH: process.env.PATH, MONGO_URL:process.env.MONGO_URL }});
 
-  console.info('Staring local server...');
-  const child = spawn('npm', ['start', process.env.PORT || 8888], {
-    cwd: path.resolve(__dirname, '../'),
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
 
   Object.assign(__e2e, { childProcessPid: child.pid });
 
@@ -140,6 +143,8 @@ module.exports = () => new Promise((resolve, reject) => {
     .catch((err) => {
       kill(child.pid, 'SIGKILL', () => reject(err));
     });
+  }).catch((error)=> console.log(error));
+  
 });
 
 // Export globals - ugly... :-(
