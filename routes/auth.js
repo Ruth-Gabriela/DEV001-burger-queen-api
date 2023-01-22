@@ -27,7 +27,7 @@ module.exports = (app, nextMain) => {
     try {
       const user = await User.findOne({ email });
       if (!user) {
-        return res.status(400).send({ error: 'No existe el usuario' });
+        return res.status(404).send({ error: 'No existe el usuario' });
       }
       const comparePassword = await user.comparePassword(password);
       if (!comparePassword) {

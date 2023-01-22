@@ -43,7 +43,7 @@ userSchema.pre('save', async function (next) {
 });
 
 // Creamos un método para comparar el password encriptado con el password entrante
-userSchema.methods.comparePassword = async function (password) {
+userSchema.methods.comparePassword = function (password) {
   return bcrypt.compare(password, this.password);
 };
 
