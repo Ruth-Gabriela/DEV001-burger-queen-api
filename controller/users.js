@@ -72,4 +72,42 @@ module.exports = {
       res.status(500).send({ error: error.message });
     }
   },
+  deleteUserByIdOrEmail: async (req, res, next) => {
+    const { uid } = req.params;
+    const { authorization } = req.headers;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
+    const token = authorization.split(' ')[1];
+    try {
+      const isEmail = emailRegex.test(uid);
+      const verifyToken = jwt.verify(token, secret);
+      const tokenUser = await User.findById({ _id: verifyToken.uid });
+      if (isEmail) {
+        const deleteUserByEmail = await User.findOne({ email: uid });
+        if (deleteUserByEmail) {
+          if (tokenUser.roles.admin === true || tokenUser.email === deleteUserByEmail.email) {
+            await User.deleteOne({ email: uid });
+            res.status(200).send(deleteUserByEmail);
+          } else {
+            res.status(403).send({ error: 'No tiene permitido eliminar si no es propietario o admin' });
+          }
+        } else {
+          res.status(404).send({ error: 'No existe el usuario solicitado' });
+        }
+      } else {
+        const deleteUserById = await User.findById({ _id: uid });
+        if (deleteUserById) {
+          if (tokenUser.roles.admin === true || tokenUser._id.equals(deleteUserById._id)) {
+            await User.deleteOne({ _id: uid });
+            res.status(200).send(deleteUserById);
+          } else {
+            res.status(403).send({ error: 'No es propietario' });
+          }
+        } else {
+          res.status(404).send({ error: 'No existe el usuario en la DB' });
+        }
+      }
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  },
 };
