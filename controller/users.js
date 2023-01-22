@@ -1,12 +1,16 @@
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const config = require('../config');
+
+const { secret } = config;
 
 module.exports = {
   getUsers: async (req, res, next) => {
     // método find() de mongoose devuelve toda la data de una collection.
     try {
-      const users = await User.find(); // id prueba error { _id: '63be4f99954170b25e100f7e' }
+      const users = await User.find(); // id prueba error { _uid: '63be4f99954170b25e100f7e' }
       if (users.length > 0) {
-        res.status(200).send({ users });
+        res.status(200).send(users);
       } else {
         res.status(404).send({ error: 'No hay usuarios en la DB' });
       }
@@ -26,7 +30,44 @@ module.exports = {
       }
       // Creamos el Usuario y le pasamos los datos del body
       const newUser = await User.create({ email, password, roles });
-      res.status(203).send(newUser);
+      res.status(200).send(newUser);
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  },
+  getUserByIdOrEmail: async (req, res, next) => {
+    // id { _id: '63be4f99954170b25e100f7e' }
+    const { uid } = req.params;
+    const { authorization } = req.headers;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
+    const token = authorization.split(' ')[1];
+    try {
+      const isEmail = emailRegex.test(uid);
+      const verifyToken = jwt.verify(token, secret);
+      const tokenUser = await User.findById({ _id: verifyToken.uid });
+      if (isEmail) {
+        const userByEmail = await User.findOne({ email: uid });
+        if (userByEmail) {
+          if (tokenUser.roles.admin === true || tokenUser.email === userByEmail.email) {
+            res.status(200).send(userByEmail);
+          } else {
+            res.status(403).send({ error: 'No es propietario o admin' });
+          }
+        } else {
+          res.status(404).send({ error: 'No existe el usuario en la DB' });
+        }
+      } else {
+        const userById = await User.findById({ _id: uid });
+        if (userById) {
+          if (tokenUser.roles.admin === true || tokenUser._id.equals(userById._id)) {
+            res.status(200).send(userById);
+          } else {
+            res.status(403).send({ error: 'No es propietario' });
+          }
+        } else {
+          res.status(404).send({ error: 'No existe el usuario en la DB' });
+        }
+      }
     } catch (error) {
       res.status(500).send({ error: error.message });
     }
