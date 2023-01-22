@@ -8,6 +8,8 @@ const {
 const {
   getUsers,
   createUser,
+  getUserByIdOrEmail,
+  deleteUserByIdOrEmail,
 } = require('../controller/users');
 
 const initAdminUser = async (app, next) => {
@@ -99,8 +101,7 @@ module.exports = (app, next) => {
    * @code {403} si no es ni admin o la misma usuaria
    * @code {404} si la usuaria solicitada no existe
    */
-  app.get('/users/:uid', requireAuth, (req, resp) => {
-  });
+  app.get('/users/:uid', requireAuth, getUserByIdOrEmail);
 
   /**
    * @name POST /users
@@ -121,7 +122,7 @@ module.exports = (app, next) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si ya existe usuaria con ese `email`
    */
-  app.post('/users', /* requireAdmin, */ createUser);
+  app.post('/users', requireAdmin, createUser);
 
   /**
    * @name PUT /users
@@ -164,8 +165,7 @@ module.exports = (app, next) => {
    * @code {403} si no es ni admin o la misma usuaria
    * @code {404} si la usuaria solicitada no existe
    */
-  app.delete('/users/:uid', requireAuth, (req, resp, next) => {
-  });
+  app.delete('/users/:uid', requireAuth, deleteUserByIdOrEmail);
 
   initAdminUser(app, next);
 };
