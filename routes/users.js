@@ -10,7 +10,9 @@ const {
   createUser,
   getUserByIdOrEmail,
   deleteUserByIdOrEmail,
+  updateUserByIdOrEmail,
 } = require('../controller/users');
+const { bodyPostUserValidator } = require('../middleware/validator');
 
 const initAdminUser = async (app, next) => {
   const { adminEmail, adminPassword } = app.get('config');
@@ -122,7 +124,7 @@ module.exports = (app, next) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si ya existe usuaria con ese `email`
    */
-  app.post('/users', requireAdmin, createUser);
+  app.post('/users', requireAdmin, bodyPostUserValidator, createUser);
 
   /**
    * @name PUT /users
@@ -146,8 +148,7 @@ module.exports = (app, next) => {
    * @code {403} una usuaria no admin intenta de modificar sus `roles`
    * @code {404} si la usuaria solicitada no existe
    */
-  app.put('/users/:uid', requireAuth, (req, resp, next) => {
-  });
+  app.put('/users/:uid', requireAuth, updateUserByIdOrEmail);
 
   /**
    * @name DELETE /users
