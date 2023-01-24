@@ -4,6 +4,13 @@ const config = require('../config');
 
 const { secret } = config;
 
+const verifyToken = async (tokenUser) => {
+  const { authorization } = tokenUser;
+  const token = authorization.split(' ')[1];
+  const verifyToken = jwt.verify(token, secret);
+  return User.findById({ _id: verifyToken.uid });
+};
+
 module.exports = {
   getUsers: async (req, res, next) => {
     // método find() de mongoose devuelve toda la data de una collection.
