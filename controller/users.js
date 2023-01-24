@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const config = require('../config');
+const pagination = require('./utils/pagination');
 
 const { secret } = config;
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
@@ -40,8 +41,16 @@ const updateUser = async (role, type, uid, password, roles) => {
 module.exports = {
   getUsers: async (req, res, next) => {
     // método find() de mongoose devuelve toda la data de una collection.
+    const url = `${req.protocol}://${req.get('host')}${req.path}`; // https://127.0.0.1:8888/users
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const page = parseInt(req.query.page, 10) || 1;
+    const skip = (page - 1) * limit;
     try {
-      const users = await User.find(); // id prueba error { _uid: '63be4f99954170b25e100f7e' }
+      // const users = await User.find(); // id prueba error { _uid: '63be4f99954170b25e100f7e' }
+      const totalUsers = await User.count();
+      const headerPagination = pagination(url, page, limit, totalUsers);
+      res.set('link', headerPagination);
+      const users = await User.find().skip(skip).limit(limit);
       if (users.length > 0) {
         res.status(200).send(users);
       } else {
