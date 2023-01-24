@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const config = require('../config');
 
@@ -17,6 +18,23 @@ const findUser = async (uid, isEmail) => {
     return User.findOne({ email: uid });
   }
   return User.findById({ _id: uid });
+};
+
+// función actualizar Usuario para el put/user.
+const updateUser = async (role, type, uid, password, roles) => {
+  if (role !== 'admin' && roles) {
+    return undefined;
+  }
+  const encryptedPassword = password
+    ? bcrypt.hashSync(password, 10)
+    : undefined;
+  return User.findOneAndUpdate(
+    { [type]: uid },
+    { password: encryptedPassword, roles },
+    {
+      new: true,
+    },
+  );
 };
 
 module.exports = {
@@ -47,6 +65,43 @@ module.exports = {
       const newUser = await User.create({ email, password, roles });
       newUser.password = undefined;
       res.status(200).send(newUser);
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  },
+  updateUserByIdOrEmail: async (req, res) => {
+    const { uid } = req.params;
+    const { password, roles } = req.body;
+    const tokenUser = await verifyToken(req.headers);
+    const isEmail = emailRegex.test(uid);
+    try {
+      const user = await findUser(uid, isEmail);
+      if (!user) {
+        return res.status(404).send({ error: 'No existe el usuario en la DB' });
+      }
+      const admin = tokenUser.roles.admin === true;
+      const owner = tokenUser._id.equals(user._id) || tokenUser.email === user.email;
+      if (admin || owner) {
+        if (!password && !roles) {
+          return res.status(400).send({
+            error: 'Debe proporcionar una contraseña o cambio de rol',
+          });
+        }
+        const type = isEmail ? 'email' : '_id';
+        const role = admin ? 'admin' : 'owner';
+        const update = await updateUser(role, type, uid, password, roles);
+        if (update) {
+          res.status(200).send(update);
+        } else {
+          res
+            .status(403)
+            .send({ error: 'Solo los admins pueden modificar el rol' });
+        }
+      } else {
+        res
+          .status(403)
+          .send({ error: 'No tienes permisos de propietario o admin' });
+      }
     } catch (error) {
       res.status(500).send({ error: error.message });
     }
