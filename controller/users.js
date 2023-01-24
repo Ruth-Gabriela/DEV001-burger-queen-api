@@ -90,37 +90,20 @@ module.exports = {
   },
   deleteUserByIdOrEmail: async (req, res, next) => {
     const { uid } = req.params;
-    const { authorization } = req.headers;
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
-    const token = authorization.split(' ')[1];
+    const tokenUser = await verifyToken(req.headers);
+    const isEmail = emailRegex.test(uid);
     try {
-      const isEmail = emailRegex.test(uid);
-      const verifyToken = jwt.verify(token, secret);
-      const tokenUser = await User.findById({ _id: verifyToken.uid });
-      if (isEmail) {
-        const deleteUserByEmail = await User.findOne({ email: uid });
-        if (deleteUserByEmail) {
-          if (tokenUser.roles.admin === true || tokenUser.email === deleteUserByEmail.email) {
-            await User.deleteOne({ email: uid });
-            res.status(200).send(deleteUserByEmail);
-          } else {
-            res.status(403).send({ error: 'No tiene permitido eliminar si no es propietario o admin' });
-          }
-        } else {
-          res.status(404).send({ error: 'No existe el usuario solicitado' });
-        }
+      const user = await findUser(uid, isEmail);
+      if (!user) {
+        return res.status(404).send({ error: 'No existe el usuario en la DB' });
+      }
+      const admin = tokenUser.roles.admin === true;
+      const owner = tokenUser._id.equals(user._id) || tokenUser.email === user.email;
+      if (admin || owner) {
+        await User.deleteOne({ email: uid });
+        res.status(200).send(user);
       } else {
-        const deleteUserById = await User.findById({ _id: uid });
-        if (deleteUserById) {
-          if (tokenUser.roles.admin === true || tokenUser._id.equals(deleteUserById._id)) {
-            await User.deleteOne({ _id: uid });
-            res.status(200).send(deleteUserById);
-          } else {
-            res.status(403).send({ error: 'No es propietario' });
-          }
-        } else {
-          res.status(404).send({ error: 'No existe el usuario en la DB' });
-        }
+        res.status(403).send({ error: 'No es propietario o admin' });
       }
     } catch (error) {
       res.status(500).send({ error: error.message });
