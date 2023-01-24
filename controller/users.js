@@ -3,12 +3,20 @@ const User = require('../models/User');
 const config = require('../config');
 
 const { secret } = config;
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
 
 const verifyToken = async (tokenUser) => {
   const { authorization } = tokenUser;
   const token = authorization.split(' ')[1];
   const verifyToken = jwt.verify(token, secret);
   return User.findById({ _id: verifyToken.uid });
+};
+
+const findUser = async (uid, isEmail) => {
+  if (isEmail) {
+    return User.findOne({ email: uid });
+  }
+  return User.findById({ _id: uid });
 };
 
 module.exports = {
