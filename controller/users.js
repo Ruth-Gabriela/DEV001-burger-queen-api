@@ -54,35 +54,19 @@ module.exports = {
   getUserByIdOrEmail: async (req, res, next) => {
     // id { _id: '63be4f99954170b25e100f7e' }
     const { uid } = req.params;
-    const { authorization } = req.headers;
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
-    const token = authorization.split(' ')[1];
+    const tokenUser = await verifyToken(req.headers);
+    const isEmail = emailRegex.test(uid);
     try {
-      const isEmail = emailRegex.test(uid);
-      const verifyToken = jwt.verify(token, secret);
-      const tokenUser = await User.findById({ _id: verifyToken.uid });
-      if (isEmail) {
-        const userByEmail = await User.findOne({ email: uid });
-        if (userByEmail) {
-          if (tokenUser.roles.admin === true || tokenUser.email === userByEmail.email) {
-            res.status(200).send(userByEmail);
-          } else {
-            res.status(403).send({ error: 'No es propietario o admin' });
-          }
-        } else {
-          res.status(404).send({ error: 'No existe el usuario en la DB' });
-        }
+      const user = await findUser(uid, isEmail);
+      if (!user) {
+        return res.status(404).send({ error: 'No existe el usuario en la DB' });
+      }
+      const admin = tokenUser.roles.admin === true;
+      const owner = tokenUser._id.equals(user._id) || tokenUser.email === user.email;
+      if (admin || owner) {
+        res.status(200).send(user);
       } else {
-        const userById = await User.findById({ _id: uid });
-        if (userById) {
-          if (tokenUser.roles.admin === true || tokenUser._id.equals(userById._id)) {
-            res.status(200).send(userById);
-          } else {
-            res.status(403).send({ error: 'No es propietario' });
-          }
-        } else {
-          res.status(404).send({ error: 'No existe el usuario en la DB' });
-        }
+        res.status(403).send({ error: 'No es propietario o admin' });
       }
     } catch (error) {
       res.status(500).send({ error: error.message });
