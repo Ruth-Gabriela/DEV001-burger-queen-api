@@ -45,6 +45,7 @@ module.exports = {
       }
       // Creamos el Usuario y le pasamos los datos del body
       const newUser = await User.create({ email, password, roles });
+      newUser.password = undefined;
       res.status(200).send(newUser);
     } catch (error) {
       res.status(500).send({ error: error.message });
