@@ -1,5 +1,14 @@
 const Product = require('../models/Product');
 
+const idRegex = /^[a-f\d]{24}$/; // valida si es un ObjectId de MongoDB
+
+const findProduct = async (productId, isId) => {
+  if (isId) {
+    return Product.findById({ _id: productId });
+  }
+  return Product.findOne({ name: productId });
+};
+
 module.exports = {
   getProducts: async (req, res, next) => {
     // método find() de mongoose devuelve toda la data de una collection.
@@ -10,6 +19,21 @@ module.exports = {
       } else {
         res.status(404).send({ message: 'no hay productos en la DB' });
       }
+    } catch (error) {
+      res.status(500).send({ message: error.message });
+    }
+  },
+  getProductByNameOrId: async (req, res, next) => {
+    const { productId } = req.params;
+    const isId = idRegex.test(productId);
+    try {
+      const product = await findProduct(productId, isId);
+      if (!product) {
+        return res
+          .status(404)
+          .send({ error: 'No existe el producto en la DB' });
+      }
+      res.status(200).send(product);
     } catch (error) {
       res.status(500).send({ message: error.message });
     }
