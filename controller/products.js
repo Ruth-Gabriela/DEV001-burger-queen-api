@@ -63,6 +63,33 @@ module.exports = {
       res.status(500).send({ message: error.message });
     }
   },
+  updateProductByIdOrEmail: async (req, res, next) => {
+    const { productId } = req.params;
+    const { price } = req.body;
+    const isId = idRegex.test(productId);
+    try {
+      const product = await findProduct(productId, isId);
+      if (!product) {
+        return res
+          .status(404)
+          .send({ error: 'No existe el producto en la DB' });
+      }
+      if (typeof price !== 'number') {
+        return next(400);
+      }
+
+      const update = await Product.findOneAndUpdate(
+        { _id: product._id },
+        { price },
+        {
+          new: true,
+        }
+      );
+      res.status(200).send(update);
+    } catch (error) {
+      res.status(500).send({ message: error.message });
+    }
+  },
   deleteProductByNameOrId: async (req, res, next) => {
     const { productId } = req.params;
     const isId = idRegex.test(productId);
