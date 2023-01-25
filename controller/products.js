@@ -63,4 +63,20 @@ module.exports = {
       res.status(500).send({ message: error.message });
     }
   },
+  deleteProductByNameOrId: async (req, res, next) => {
+    const { productId } = req.params;
+    const isId = idRegex.test(productId);
+    try {
+      const product = await findProduct(productId, isId);
+      if (!product) {
+        return res
+          .status(404)
+          .send({ error: 'No existe el producto en la DB' });
+      }
+      await Product.deleteOne({ _id: product._id });
+      res.status(200).send(product);
+    } catch (error) {
+      res.status(500).send({ message: error.message });
+    }
+  },
 };
