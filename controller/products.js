@@ -15,7 +15,7 @@ module.exports = {
     try {
       const products = await Product.find(); // id prueba error { _id: '63be4f99954170b25e100f7e' }
       if (products.length > 0) {
-        res.status(200).send({ products });
+        res.status(200).send(products);
       } else {
         res.status(404).send({ message: 'no hay productos en la DB' });
       }
