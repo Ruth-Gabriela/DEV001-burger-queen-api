@@ -14,4 +14,29 @@ module.exports = {
       res.status(500).send({ message: error.message });
     }
   },
+  createProduct: async (req, res, next) => {
+    // eslint-disable-next-line object-curly-newline
+    const { name, price, image, type } = req.body;
+    if (!name || !price) {
+      return next(400);
+    }
+    try {
+      const product = await Product.findOne({ name });
+      if (product) {
+        return res
+          .status(403)
+          .send({ message: 'El producto ya esta registrado' });
+      }
+      // Creamos el producto y le pasamos los datos del body
+      const newProduct = await Product.create({
+        name,
+        price,
+        image,
+        type,
+      });
+      res.status(200).send(newProduct);
+    } catch (error) {
+      res.status(500).send({ message: error.message });
+    }
+  },
 };
