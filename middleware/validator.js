@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const { body } = require('express-validator');
+const { body, param } = require('express-validator');
 
 const validation = (req, res, next) => {
   const errorFormatter = ({ msg, param }) => ({ [param]: msg });
@@ -26,4 +26,14 @@ const bodyPostUserValidator = [
   validation,
 ];
 
-module.exports = { validation, bodyPostUserValidator };
+const paramOrderId = [
+  param('orderId')
+    .trim()
+    .notEmpty()
+    .escape()
+    .matches(/^[a-f\d]{24}$/, 'i')
+    .withMessage('Formato de ID Incorrecto'),
+  validation,
+];
+
+module.exports = { validation, bodyPostUserValidator, paramOrderId };
