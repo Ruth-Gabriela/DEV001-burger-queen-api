@@ -1,7 +1,8 @@
-const { getOrders, createOrder } = require('../controller/orders');
+const { getOrders, createOrder, getOrderById, deleteOrderById, updateOrderById } = require('../controller/orders');
 const {
   requireAuth,
 } = require('../middleware/auth');
+const { paramOrderId } = require('../middleware/validator');
 
 /** @module orders */
 module.exports = (app, nextMain) => {
@@ -54,8 +55,7 @@ module.exports = (app, nextMain) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {404} si la orden con `orderId` indicado no existe
    */
-  app.get('/orders/:orderId', requireAuth, (req, resp, next) => {
-  });
+  app.get('/orders/:orderId', requireAuth, paramOrderId, getOrderById);
 
   /**
    * @name POST /orders
@@ -113,8 +113,7 @@ module.exports = (app, nextMain) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {404} si la orderId con `orderId` indicado no existe
    */
-  app.put('/orders/:orderId', requireAuth, (req, resp, next) => {
-  });
+  app.put('/orders/:orderId', requireAuth, paramOrderId, updateOrderById);
 
   /**
    * @name DELETE /orders
@@ -137,8 +136,7 @@ module.exports = (app, nextMain) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {404} si el producto con `orderId` indicado no existe
    */
-  app.delete('/orders/:orderId', requireAuth, (req, resp, next) => {
-  });
+  app.delete('/orders/:orderId', requireAuth, paramOrderId, deleteOrderById);
 
   nextMain();
 };
