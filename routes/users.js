@@ -27,7 +27,7 @@ const initAdminUser = async (app, next) => {
   };
 
   // TODO: crear usuaria admin
-  const foundedUser = await User.findOne({ email: adminEmail });
+  const foundedUser = await User.findOne({ email: adminEmail }, { timeout: 30000 });
   if (foundedUser) {
     next();
   } else {
