@@ -24,7 +24,8 @@
     "express-validator": "^6.14.3",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.13.0",
-    "mongoose": "^6.8.3"
+    "mongoose": "^6.8.3",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "@shelf/jest-mongodb": "^4.1.5",
