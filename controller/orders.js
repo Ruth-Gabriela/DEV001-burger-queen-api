@@ -90,4 +90,36 @@ module.exports = {
       res.status(500).send({ message: error.message });
     }
   },
+  updateOrderById: async (req, res, next) => {
+    const { orderId } = req.params;
+    const { status } = req.body;
+    const dateProcessed = status === 'delivered' ? Date.now() : undefined;
+    const validStatus = ['pending', 'canceled', 'preparing', 'delivering', 'delivered'];
+    try {
+      const order = await Order.findById({ _id: orderId });
+      if (!order) {
+        return res
+          .status(404)
+          .send({ error: 'No existe la orden en la DB' });
+      }
+      if (!status) {
+        return next(400);
+      }
+      if (!validStatus.includes(status)) {
+        return res
+          .status(400)
+          .send({ error: 'Valor del status es incorrecto' });
+      }
+      const update = await Order.findOneAndUpdate(
+        { _id: orderId },
+        { status, dateProcessed },
+        {
+          new: true,
+        },
+      );
+      res.status(200).send(update);
+    } catch (error) {
+      res.status(500).send({ message: error.message });
+    }
+  },
 };
