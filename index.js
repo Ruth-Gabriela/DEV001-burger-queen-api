@@ -14,7 +14,7 @@ const { port, dbUrl, secret } = config;
 const app = express();
 
 // TODO: Conexión a la Base de Datos (MongoDB o MySQL)
-connectDB(); // llamamos a la función que conecta con nuestra base de datos en Mongo DB Atlas
+connectDB(dbUrl); // llamamos a la función que conecta con nuestra base de datos en Mongo DB Atlas
 
 app.set('config', config); // añadimos propiedades a app.
 app.set('pkg', pkg);
