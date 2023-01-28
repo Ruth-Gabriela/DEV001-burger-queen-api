@@ -19,7 +19,7 @@ module.exports = {
       if (orders.length > 0) {
         res.status(200).send(orders);
       } else {
-        res.status(404).send({ message: 'No existen ordenes en la BD' });
+        res.status(404).send({ message: 'No existen ordenes en la DB' });
       }
     } catch (error) {
       res.status(500).send({ message: error.message });
@@ -29,7 +29,9 @@ module.exports = {
     // eslint-disable-next-line object-curly-newline
     const user = await verifyToken(req.headers);
     const userTokenId = user._id;
-    const { userId, client, status, products } = req.body;
+    const {
+      userId, client, status, products,
+    } = req.body;
     if (!products || products.length === 0) {
       return next(400);
     }
@@ -45,7 +47,7 @@ module.exports = {
       const newOrderWithPopulate = await Order.findById({
         _id: newOrder._id,
       }).populate('products.productId');
-      const response = {
+      const newOrderWithDetails = {
         ...newOrderWithPopulate._doc,
         products: newOrderWithPopulate.products.map((p) => ({
           qty: p.qty,
@@ -57,7 +59,33 @@ module.exports = {
           },
         })),
       };
-      res.status(200).send(response);
+      res.status(200).send(newOrderWithDetails);
+    } catch (error) {
+      res.status(500).send({ message: error.message });
+    }
+  },
+  getOrderById: async (req, res, next) => {
+    const { orderId } = req.params;
+    try {
+      const order = await Order.findById({ _id: orderId }).populate('products.productId');
+      if (!order) {
+        return res
+          .status(404)
+          .send({ error: 'No existe la orden en la DB' });
+      }
+      const orderWithDetails = {
+        ...order._doc,
+        products: order.products.map((p) => ({
+          qty: p.qty,
+          product: {
+            ...p.productId._doc,
+            name:
+            p.productId.name.charAt(0).toUpperCase()
+            + p.productId.name.slice(1),
+          },
+        })),
+      };
+      res.status(200).send(orderWithDetails);
     } catch (error) {
       res.status(500).send({ message: error.message });
     }
