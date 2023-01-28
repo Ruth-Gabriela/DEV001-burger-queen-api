@@ -64,7 +64,6 @@ const createTestUser = () => fetchAsAdmin('/users', {
     if (resp.status !== 200) {
       throw new Error('Could not create test user');
     }
-    console.log("si")
     return fetch('/auth', { method: 'POST', body: __e2e.testUserCredentials });
   })
   .then((resp) => {

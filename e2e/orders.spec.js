@@ -195,7 +195,7 @@ describe('GET /orders/:orderId', () => {
   ));
 
   it('should fail with 404 when admin and not found', () => (
-    fetchAsAdmin('/orders/xxx')
+    fetchAsAdmin('/orders/63d367e6fc13ae7045000000')
       .then((resp) => expect(resp.status).toBe(404))
   ));
 
@@ -227,7 +227,7 @@ describe('GET /orders/:orderId', () => {
       })
       .then((json) => {
         expect(json.products.length).toBe(1);
-        expect(json.products[0].product.name).toBe('Test');
+        expect(json.products[0].product.name).toBe('Test10');
         expect(json.products[0].product.price).toBe(99);
       })
   ));
@@ -260,7 +260,7 @@ describe('GET /orders/:orderId', () => {
       })
       .then((json) => {
         expect(json.products.length).toBe(1);
-        expect(json.products[0].product.name).toBe('Test');
+        expect(json.products[0].product.name).toBe('Test11');
         expect(json.products[0].product.price).toBe(10);
       })
   ));
@@ -273,7 +273,7 @@ describe('PUT /orders/:orderId', () => {
   ));
 
   it('should fail with 404 when not found', () => (
-    fetchAsAdmin('/orders/xxx', {
+    fetchAsAdmin('/orders/63d367e6fc13ae8045000000', {
       method: 'PUT',
       body: { state: 'canceled' },
     })
@@ -451,7 +451,7 @@ describe('DELETE /orders/:orderId', () => {
   ));
 
   it('should fail with 404 when not found', () => (
-    fetchAsAdmin('/orders/xxx', { method: 'DELETE' })
+    fetchAsAdmin('/orders/63d367e6fc13ae7045000000', { method: 'DELETE' })
       .then((resp) => expect(resp.status).toBe(404))
   ));
 
