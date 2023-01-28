@@ -122,4 +122,19 @@ module.exports = {
       res.status(500).send({ message: error.message });
     }
   },
+  deleteOrderById: async (req, res, next) => {
+    const { orderId } = req.params;
+    try {
+      const order = await Order.findById({ _id: orderId });
+      if (!order) {
+        return res
+          .status(404)
+          .send({ error: 'No existe la orden en la DB' });
+      }
+      await Order.deleteOne({ _id: orderId });
+      res.status(200).send(order);
+    } catch (error) {
+      res.status(500).send({ message: error.message });
+    }
+  },
 };
