@@ -20,6 +20,11 @@ app.set('config', config); // añadimos propiedades a app.
 app.set('pkg', pkg);
 
 // parse application/x-www-form-urlencoded --middleware.
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(morgan('dev'));
