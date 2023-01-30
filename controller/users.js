@@ -47,7 +47,7 @@ module.exports = {
     const skip = (page - 1) * limit;
     try {
       // const users = await User.find(); // id prueba error { _uid: '63be4f99954170b25e100f7e' }
-      const totalUsers = await User.count();
+      const totalUsers = await User.count(); // cuenta y devuelve un entero.
       const headerPagination = pagination(url, page, limit, totalUsers);
       res.set('link', headerPagination);
       const users = await User.find().skip(skip).limit(limit);

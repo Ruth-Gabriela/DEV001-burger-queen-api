@@ -27,6 +27,8 @@ module.exports = (app, nextMain) => {
    * @response {Date} products[].dateEntry Fecha de creación
    * @code {200} si la autenticación es correcta
    * @code {401} si no hay cabecera de autenticación
+   * @code {404} si no hay productos en la base de datos
+   * @code {500} si existe error el la petición o servidor
    */
   app.get('/products', requireAuth, getProducts);
 
@@ -46,6 +48,7 @@ module.exports = (app, nextMain) => {
    * @code {200} si la autenticación es correcta
    * @code {401} si no hay cabecera de autenticación
    * @code {404} si el producto con `productId` indicado no existe
+   * @code {500} si existe error el la petición o servidor
    */
   app.get('/products/:productId', requireAuth, getProductByNameOrId);
 
@@ -69,7 +72,8 @@ module.exports = (app, nextMain) => {
    * @code {400} si no se indican `name` o `price`
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si no es admin
-   * @code {404} si el producto con `productId` indicado no existe
+   * @code {403} si el producto ya esta registrado
+   * @code {500} si existe error el la petición o servidor
    */
   app.post('/products', requireAdmin, createProduct);
 
@@ -95,6 +99,7 @@ module.exports = (app, nextMain) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si no es admin
    * @code {404} si el producto con `productId` indicado no existe
+   * @code {500} si existe error el la petición o servidor
    */
   app.put('/products/:productId', requireAdmin, updateProductByIdOrEmail);
 
@@ -115,6 +120,7 @@ module.exports = (app, nextMain) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si no es ni admin
    * @code {404} si el producto con `productId` indicado no existe
+   * @code {500} si existe error el la petición o servidor
    */
   app.delete('/products/:productId', requireAdmin, deleteProductByNameOrId);
 

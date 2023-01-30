@@ -26,11 +26,13 @@ module.exports = (app, nextMain) => {
    * @response {Object} orders[].products[] Producto
    * @response {Number} orders[].products[].qty Cantidad
    * @response {Object} orders[].products[].product Producto
-   * @response {String} orders[].status Estado: `pending`, `canceled`, `delivering` o `delivered`
+   * @response {String} orders[].status Estado: `pending`, `canceled`, `preparing`, `delivering` o `delivered`
    * @response {Date} orders[].dateEntry Fecha de creación
    * @response {Date} [orders[].dateProcessed] Fecha de cambio de `status` a `delivered`
    * @code {200} si la autenticación es correcta
    * @code {401} si no hay cabecera de autenticación
+   * @code {404} si no existen ordenes en la base de datos
+   * @code {500} si existe error el la petición o servidor
    */
   app.get('/orders', requireAuth, getOrders);
 
@@ -48,12 +50,13 @@ module.exports = (app, nextMain) => {
    * @response {Object} order.products[] Producto
    * @response {Number} order.products[].qty Cantidad
    * @response {Object} order.products[].product Producto
-   * @response {String} order.status Estado: `pending`, `canceled`, `delivering` o `delivered`
+   * @response {String} order.status Estado: `pending`, `canceled`, `delivering`, `preparing` o `delivered`
    * @response {Date} order.dateEntry Fecha de creación
    * @response {Date} [order.dateProcessed] Fecha de cambio de `status` a `delivered`
    * @code {200} si la autenticación es correcta
    * @code {401} si no hay cabecera de autenticación
    * @code {404} si la orden con `orderId` indicado no existe
+   * @code {500} si existe error el la petición o servidor
    */
   app.get('/orders/:orderId', requireAuth, paramOrderId, getOrderById);
 
@@ -76,12 +79,13 @@ module.exports = (app, nextMain) => {
    * @response {Object} order.products[] Producto
    * @response {Number} order.products[].qty Cantidad
    * @response {Object} order.products[].product Producto
-   * @response {String} order.status Estado: `pending`, `canceled`, `delivering` o `delivered`
+   * @response {String} order.status Estado: `pending`, `canceled`, `delivering`, `preparing` o `delivered`
    * @response {Date} order.dateEntry Fecha de creación
    * @response {Date} [order.dateProcessed] Fecha de cambio de `status` a `delivered`
    * @code {200} si la autenticación es correcta
    * @code {400} no se indica `userId` o se intenta crear una orden sin productos
    * @code {401} si no hay cabecera de autenticación
+   * @code {500} si existe error el la petición o servidor
    */
   app.post('/orders', requireAuth, createOrder);
 
@@ -105,13 +109,14 @@ module.exports = (app, nextMain) => {
    * @response {Object} order.products[] Producto
    * @response {Number} order.products[].qty Cantidad
    * @response {Object} order.products[].product Producto
-   * @response {String} order.status Estado: `pending`, `canceled`, `delivering` o `delivered`
+   * @response {String} order.status Estado: `pending`, `canceled`, `delivering`, `preparing` o `delivered`
    * @response {Date} order.dateEntry Fecha de creación
    * @response {Date} [order.dateProcessed] Fecha de cambio de `status` a `delivered`
    * @code {200} si la autenticación es correcta
    * @code {400} si no se indican ninguna propiedad a modificar o la propiedad `status` no es valida
    * @code {401} si no hay cabecera de autenticación
    * @code {404} si la orderId con `orderId` indicado no existe
+   * @code {500} si existe error el la petición o servidor
    */
   app.put('/orders/:orderId', requireAuth, paramOrderId, updateOrderById);
 
@@ -129,12 +134,13 @@ module.exports = (app, nextMain) => {
    * @response {Object} order.products[] Producto
    * @response {Number} order.products[].qty Cantidad
    * @response {Object} order.products[].product Producto
-   * @response {String} order.status Estado: `pending`, `canceled`, `delivering` o `delivered`
+   * @response {String} order.status Estado: `pending`, `canceled`, `delivering`, `preparing` o `delivered`
    * @response {Date} order.dateEntry Fecha de creación
    * @response {Date} [order.dateProcessed] Fecha de cambio de `status` a `delivered`
    * @code {200} si la autenticación es correcta
    * @code {401} si no hay cabecera de autenticación
    * @code {404} si el producto con `orderId` indicado no existe
+   * @code {500} si existe error el la petición o servidor
    */
   app.delete('/orders/:orderId', requireAuth, paramOrderId, deleteOrderById);
 

@@ -14,8 +14,12 @@ module.exports = (app, nextMain) => {
    * @body {String} password Contraseña
    * @response {Object} resp
    * @response {String} resp.token Token a usar para los requests sucesivos
+   * @response {Object} resp.user datos del usuario autenticado.
    * @code {200} si la autenticación es correcta
    * @code {400} si no se proveen `email` o `password` o ninguno de los dos
+   * @code {404} si no existe el usuario.
+   * @code {403} si la contraseña del usuario no es correcta.
+   * @code {500} si existe error el la petición o servidor.
    * @auth No requiere autenticación
    */
   app.post('/auth', async (req, res, next) => {
