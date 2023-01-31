@@ -181,6 +181,12 @@
             
             
             <td class="description last">Token a usar para los requests sucesivos</td>
+          </tr><tr>
+            <td class="name">resp.user</td>
+            <td class="type">Object</td>
+            
+            
+            <td class="description last">datos del usuario autenticado.</td>
           </tr>
           </table>
                             <h5>Response Code:</h5>
@@ -206,6 +212,24 @@
             
             
             <td class="description last">si no se proveen `email` o `password` o ninguno de los dos</td>
+          </tr><tr>
+            
+            <td class="type">404</td>
+            
+            
+            <td class="description last">si no existe el usuario.</td>
+          </tr><tr>
+            
+            <td class="type">403</td>
+            
+            
+            <td class="description last">si la contraseña del usuario no es correcta.</td>
+          </tr><tr>
+            
+            <td class="type">500</td>
+            
+            
+            <td class="description last">si existe error el la petición o servidor.</td>
           </tr>
           </table>
 </div>

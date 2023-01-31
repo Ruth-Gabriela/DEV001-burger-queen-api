@@ -216,7 +216,7 @@
             <td class="type">String</td>
             <td class="attributes"></td>
             
-            <td class="description last">Estado: `pending`, `canceled`, `delivering` o `delivered`</td>
+            <td class="description last">Estado: `pending`, `canceled`, `delivering`, `preparing` o `delivered`</td>
           </tr><tr>
             <td class="name">order.dateEntry</td>
             <td class="type">Date</td>
@@ -260,6 +260,12 @@
             
             
             <td class="description last">si el producto con `orderId` indicado no existe</td>
+          </tr><tr>
+            
+            <td class="type">500</td>
+            
+            
+            <td class="description last">si existe error el la petición o servidor</td>
           </tr>
           </table>
 </div>
@@ -462,7 +468,7 @@
             <td class="type">String</td>
             <td class="attributes"></td>
             
-            <td class="description last">Estado: `pending`, `canceled`, `delivering` o `delivered`</td>
+            <td class="description last">Estado: `pending`, `canceled`, `preparing`, `delivering` o `delivered`</td>
           </tr><tr>
             <td class="name">orders[].dateEntry</td>
             <td class="type">Date</td>
@@ -500,6 +506,18 @@
             
             
             <td class="description last">si no hay cabecera de autenticación</td>
+          </tr><tr>
+            
+            <td class="type">404</td>
+            
+            
+            <td class="description last">si no existen ordenes en la base de datos</td>
+          </tr><tr>
+            
+            <td class="type">500</td>
+            
+            
+            <td class="description last">si existe error el la petición o servidor</td>
           </tr>
           </table>
 </div>
@@ -653,7 +671,7 @@
             <td class="type">String</td>
             <td class="attributes"></td>
             
-            <td class="description last">Estado: `pending`, `canceled`, `delivering` o `delivered`</td>
+            <td class="description last">Estado: `pending`, `canceled`, `delivering`, `preparing` o `delivered`</td>
           </tr><tr>
             <td class="name">order.dateEntry</td>
             <td class="type">Date</td>
@@ -697,6 +715,12 @@
             
             
             <td class="description last">si la orden con `orderId` indicado no existe</td>
+          </tr><tr>
+            
+            <td class="type">500</td>
+            
+            
+            <td class="description last">si existe error el la petición o servidor</td>
           </tr>
           </table>
 </div>
@@ -880,7 +904,7 @@
             <td class="type">String</td>
             <td class="attributes"></td>
             
-            <td class="description last">Estado: `pending`, `canceled`, `delivering` o `delivered`</td>
+            <td class="description last">Estado: `pending`, `canceled`, `delivering`, `preparing` o `delivered`</td>
           </tr><tr>
             <td class="name">order.dateEntry</td>
             <td class="type">Date</td>
@@ -924,6 +948,12 @@
             
             
             <td class="description last">si no hay cabecera de autenticación</td>
+          </tr><tr>
+            
+            <td class="type">500</td>
+            
+            
+            <td class="description last">si existe error el la petición o servidor</td>
           </tr>
           </table>
 </div>
@@ -1126,7 +1156,7 @@
             <td class="type">String</td>
             <td class="attributes"></td>
             
-            <td class="description last">Estado: `pending`, `canceled`, `delivering` o `delivered`</td>
+            <td class="description last">Estado: `pending`, `canceled`, `delivering`, `preparing` o `delivered`</td>
           </tr><tr>
             <td class="name">order.dateEntry</td>
             <td class="type">Date</td>
@@ -1176,6 +1206,12 @@
             
             
             <td class="description last">si la orderId con `orderId` indicado no existe</td>
+          </tr><tr>
+            
+            <td class="type">500</td>
+            
+            
+            <td class="description last">si existe error el la petición o servidor</td>
           </tr>
           </table>
 </div>
