@@ -1,4 +1,4 @@
-const { getProducts, getProductByNameOrId, createProduct, updateProductByIdOrEmail, deleteProductByNameOrId } = require('../controller/products');
+const { getProducts, getProductByNameOrId, createProduct, updateProductByIdOrEmail, deleteProductByNameOrId, searchProductByName } = require('../controller/products');
 const {
   requireAuth,
   requireAdmin,

@@ -6,7 +6,7 @@ const findProduct = async (productId, isId) => {
   if (isId) {
     return Product.findById({ _id: productId });
   }
-  return Product.findOne({ name: productId });
+  return Product.find({ name: { $regex: productId, $options: 'i' } });
 };
 
 module.exports = {

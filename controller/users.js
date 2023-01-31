@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const config = require('../config');
 const pagination = require('./utils/pagination');
+const Order = require('../models/Order');
 
 const { secret } = config;
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
@@ -153,6 +154,19 @@ module.exports = {
       } else {
         res.status(403).send({ error: 'No es propietario o admin' });
       }
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  },
+  getSalesByUserId: async (req, res, next) => {
+    // id { _id: '63be4f99954170b25e100f7e' }
+    const { uid } = req.params;
+    try {
+      const userOrders = await Order.find({ userId: uid }).populate('products.productId');
+      if (!userOrders) {
+        return res.status(404).send({ error: 'El usuario no tiene Ordenes' });
+      }
+      res.status(200).send(userOrders);
     } catch (error) {
       res.status(500).send({ error: error.message });
     }

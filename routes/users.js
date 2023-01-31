@@ -11,6 +11,7 @@ const {
   getUserByIdOrEmail,
   deleteUserByIdOrEmail,
   updateUserByIdOrEmail,
+  getSalesByUserId,
 } = require('../controller/users');
 const { bodyPostUserValidator } = require('../middleware/validator');
 
@@ -173,6 +174,9 @@ module.exports = (app, next) => {
    * @code {500} si existe error el la petición o servidor
    */
   app.delete('/users/:uid', requireAuth, deleteUserByIdOrEmail);
+
+  /* prueba */
+  app.get('/users/sales/:uid', requireAdmin, getSalesByUserId);
 
   initAdminUser(app, next);
 };
