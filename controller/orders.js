@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const Order = require('../models/Order');
 const User = require('../models/User');
 const config = require('../config');
+const pagination = require('./utils/pagination');
 
 const { secret } = config;
 
@@ -15,8 +16,16 @@ const verifyToken = async (tokenUser) => {
 
 module.exports = {
   getOrders: async (req, res, next) => {
+    const url = `${req.protocol}://${req.get('host')}${req.path}`; // https://127.0.0.1:8888/products
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const page = parseInt(req.query.page, 10) || 1;
+    const skip = (page - 1) * limit;
     try {
-      const orders = await Order.find()/* .populate('products.productId') */;
+      const totalOrders = await Order.count(); // cuenta y devuelve un entero.
+      const headerPagination = pagination(url, page, limit, totalOrders);
+      res.set('link', JSON.stringify(headerPagination));
+
+      const orders = await Order.find().skip(skip).limit(limit);
       if (orders.length > 0) {
         res.status(200).send(orders);
       } else {

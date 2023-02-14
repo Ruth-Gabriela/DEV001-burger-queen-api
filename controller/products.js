@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const pagination = require('./utils/pagination');
 
 const idRegex = /^[a-f\d]{24}$/; // valida si es un ObjectId de MongoDB
 
@@ -12,9 +13,16 @@ const findProduct = async (productId, isId) => {
 module.exports = {
   getProducts: async (req, res, next) => {
     // método find() de mongoose devuelve toda la data de una collection.
+    const url = `${req.protocol}://${req.get('host')}${req.path}`; // https://127.0.0.1:8888/products
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const page = parseInt(req.query.page, 10) || 1;
+    const skip = (page - 1) * limit;
     try {
-      const products = await Product.find(); // id prueba error { _id: '63be4f99954170b25e100f7e' }
-      // console.log(products)
+      const totalProducts = await Product.count(); // cuenta y devuelve un entero.
+      const headerPagination = pagination(url, page, limit, totalProducts);
+      res.set('link', JSON.stringify(headerPagination));
+
+      const products = await Product.find().skip(skip).limit(limit);
       if (products.length > 0) {
         res.status(200).send(products);
       } else {
