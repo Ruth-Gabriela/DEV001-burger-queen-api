@@ -27,7 +27,17 @@ module.exports = {
 
       const orders = await Order.find().skip(skip).limit(limit);
       if (orders.length > 0) {
-        res.status(200).send(orders);
+        res.status(200).send(
+          {
+            count: totalOrders,
+            pages: headerPagination.totalPages,
+            prev: headerPagination.links.prev,
+            next: headerPagination.links.next,
+            first: headerPagination.links.first,
+            last: headerPagination.links.last,
+            orders,
+          },
+        );
       } else {
         res.status(404).send({ message: 'No existen ordenes en la DB' });
       }
