@@ -3,6 +3,7 @@ const User = require('../models/User');
 
 module.exports = (secret) => (req, resp, next) => {
   const { authorization } = req.headers;
+  // console.log(req.headers);
   /* headers {
     page: '1',
     limit: '10',

@@ -1,7 +1,11 @@
 const { validationResult } = require('express-validator');
 const { body, param } = require('express-validator');
 
+// función de documentación para formatear los errores y validar lo que ingresa por req:
 const validation = (req, res, next) => {
+  // La función "errorFormatter" se utiliza para formatear los errores en un formato
+  // específico, en este caso, un objeto con la propiedad "param" como la clave y el
+  // mensaje de error como el valor.
   const errorFormatter = ({ msg, param }) => ({ [param]: msg });
   const errors = validationResult(req).formatWith(errorFormatter);
   if (!errors.isEmpty()) {

@@ -3,13 +3,18 @@ const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const config = require('../config');
 const pagination = require('./utils/pagination');
+const Order = require('../models/Order');
 
 const { secret } = config;
+// expresion regular para validar un correo electronico.
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
 
 const verifyToken = async (tokenUser) => {
   const { authorization } = tokenUser;
   const token = authorization.split(' ')[1];
+  // función "jwt.verify" se usa para verificar la autenticidad del token. Recibe dos
+  // parámetros: el token y una clave secreta. La clave secreta es usada para firmar y
+  // verificar el token.
   const verifyToken = jwt.verify(token, secret);
   return User.findById({ _id: verifyToken.uid });
 };
@@ -21,7 +26,7 @@ const findUser = async (uid, isEmail) => {
   return User.findById({ _id: uid });
 };
 
-// función actualizar Usuario para el put/user.
+// Función asíncrona que actualiza un usuario en una base de datos.
 const updateUser = async (role, type, uid, password, roles) => {
   if (role !== 'admin' && roles) {
     return undefined;
@@ -47,9 +52,10 @@ module.exports = {
     const skip = (page - 1) * limit;
     try {
       // const users = await User.find(); // id prueba error { _uid: '63be4f99954170b25e100f7e' }
-      const totalUsers = await User.count();
+      const totalUsers = await User.count(); // cuenta y devuelve un entero.
       const headerPagination = pagination(url, page, limit, totalUsers);
       res.set('link', headerPagination);
+
       const users = await User.find().skip(skip).limit(limit);
       if (users.length > 0) {
         res.status(200).send(users);
@@ -153,6 +159,19 @@ module.exports = {
       } else {
         res.status(403).send({ error: 'No es propietario o admin' });
       }
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  },
+  getSalesByUserId: async (req, res, next) => {
+    // id { _id: '63be4f99954170b25e100f7e' }
+    const { uid } = req.params;
+    try {
+      const userOrders = await Order.find({ userId: uid }).populate('products.productId');
+      if (!userOrders) {
+        return res.status(404).send({ error: 'El usuario no tiene Ordenes' });
+      }
+      res.status(200).send(userOrders);
     } catch (error) {
       res.status(500).send({ error: error.message });
     }

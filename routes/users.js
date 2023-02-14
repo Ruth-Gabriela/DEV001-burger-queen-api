@@ -11,6 +11,7 @@ const {
   getUserByIdOrEmail,
   deleteUserByIdOrEmail,
   updateUserByIdOrEmail,
+  getSalesByUserId,
 } = require('../controller/users');
 const { bodyPostUserValidator } = require('../middleware/validator');
 
@@ -78,12 +79,14 @@ module.exports = (app, next) => {
    * @auth Requiere `token` de autenticación y que la usuaria sea **admin**
    * @response {Array} users
    * @response {String} users[]._id
-   * @response {Object} users[].email
+   * @response {String} users[].email
    * @response {Object} users[].roles
    * @response {Boolean} users[].roles.admin
    * @code {200} si la autenticación es correcta
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si no es ni admin
+   * @code {404} si no hay usuarios en la base de datos
+   * @code {500} si existe error el la petición o servidor
    */
   app.get('/users', requireAdmin, getUsers);
 
@@ -95,13 +98,14 @@ module.exports = (app, next) => {
    * @auth Requiere `token` de autenticación y que la usuaria sea **admin** o la usuaria a consultar
    * @response {Object} user
    * @response {String} user._id
-   * @response {Object} user.email
+   * @response {String} user.email
    * @response {Object} user.roles
    * @response {Boolean} user.roles.admin
    * @code {200} si la autenticación es correcta
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si no es ni admin o la misma usuaria
    * @code {404} si la usuaria solicitada no existe
+   * @code {500} si existe error el la petición o servidor
    */
   app.get('/users/:uid', requireAuth, getUserByIdOrEmail);
 
@@ -116,13 +120,14 @@ module.exports = (app, next) => {
    * @auth Requiere `token` de autenticación y que la usuaria sea **admin**
    * @response {Object} user
    * @response {String} user._id
-   * @response {Object} user.email
+   * @response {String} user.email
    * @response {Object} user.roles
    * @response {Boolean} user.roles.admin
    * @code {200} si la autenticación es correcta
    * @code {400} si no se proveen `email` o `password` o ninguno de los dos
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si ya existe usuaria con ese `email`
+   * @code {500} si existe error el la petición o servidor
    */
   app.post('/users', requireAdmin, bodyPostUserValidator, createUser);
 
@@ -138,7 +143,7 @@ module.exports = (app, next) => {
    * @auth Requiere `token` de autenticación y que la usuaria sea **admin** o la usuaria a modificar
    * @response {Object} user
    * @response {String} user._id
-   * @response {Object} user.email
+   * @response {String} user.email
    * @response {Object} user.roles
    * @response {Boolean} user.roles.admin
    * @code {200} si la autenticación es correcta
@@ -147,6 +152,7 @@ module.exports = (app, next) => {
    * @code {403} si no es ni admin o la misma usuaria
    * @code {403} una usuaria no admin intenta de modificar sus `roles`
    * @code {404} si la usuaria solicitada no existe
+   * @code {500} si existe error el la petición o servidor
    */
   app.put('/users/:uid', requireAuth, updateUserByIdOrEmail);
 
@@ -158,15 +164,19 @@ module.exports = (app, next) => {
    * @auth Requiere `token` de autenticación y que la usuaria sea **admin** o la usuaria a eliminar
    * @response {Object} user
    * @response {String} user._id
-   * @response {Object} user.email
+   * @response {String} user.email
    * @response {Object} user.roles
    * @response {Boolean} user.roles.admin
    * @code {200} si la autenticación es correcta
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si no es ni admin o la misma usuaria
    * @code {404} si la usuaria solicitada no existe
+   * @code {500} si existe error el la petición o servidor
    */
   app.delete('/users/:uid', requireAuth, deleteUserByIdOrEmail);
+
+  /* prueba */
+  app.get('/users/sales/:uid', requireAdmin, getSalesByUserId);
 
   initAdminUser(app, next);
 };

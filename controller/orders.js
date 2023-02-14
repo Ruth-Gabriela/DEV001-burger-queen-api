@@ -5,6 +5,7 @@ const config = require('../config');
 
 const { secret } = config;
 
+// Función que verifica el jwt
 const verifyToken = async (tokenUser) => {
   const { authorization } = tokenUser;
   const token = authorization.split(' ')[1];
@@ -15,7 +16,7 @@ const verifyToken = async (tokenUser) => {
 module.exports = {
   getOrders: async (req, res, next) => {
     try {
-      const orders = await Order.find();
+      const orders = await Order.find()/* .populate('products.productId') */;
       if (orders.length > 0) {
         res.status(200).send(orders);
       } else {
@@ -36,7 +37,7 @@ module.exports = {
       return next(400);
     }
     try {
-      // Creamos el producto y le pasamos los datos del body
+      // Creamos el producto, le pasamos los datos del body y guardamos
       const newOrder = new Order({
         userId: userId || userTokenId,
         client,
@@ -44,9 +45,12 @@ module.exports = {
         status,
       });
       await newOrder.save();
+      // metodo populate() devuelve los campos establecidos de la referencia
       const newOrderWithPopulate = await Order.findById({
         _id: newOrder._id,
       }).populate('products.productId');
+      // cambiamos de productId a product
+      // ponemos en mayúscula el primer caracter de productId.name
       const newOrderWithDetails = {
         ...newOrderWithPopulate._doc,
         products: newOrderWithPopulate.products.map((p) => ({
