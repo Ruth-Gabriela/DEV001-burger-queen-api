@@ -5,14 +5,17 @@ const pagination = (url, page, limit, total) => {
   const lastPage = Math.ceil(total / limit); // numero de páginas
   const nextPage = limit * page < total ? (parseInt(page, 0) + 1) : lastPage;
 
-  const link = {
+  const links = {
     first: `${url}?limit=${limit}&page=1`,
     prev: `${url}?limit=${limit}&page=${prevPage}`,
     next: `${url}?limit=${limit}&page=${nextPage}`,
     last: `${url}?limit=${limit}&page=${lastPage}`,
   };
 
-  return `${link.first}, ${link.prev}, ${link.next}, ${link.last}`;
+  return {
+    totalPages: lastPage,
+    links,
+  };
 };
 
 module.exports = pagination;
