@@ -6,7 +6,7 @@ const findProduct = async (productId, isId) => {
   if (isId) {
     return Product.findById({ _id: productId });
   }
-  return Product.find({ name: { $regex: productId, $options: 'i' } });
+  return Product.findOne({ name: productId });
 };
 
 module.exports = {
@@ -14,6 +14,7 @@ module.exports = {
     // método find() de mongoose devuelve toda la data de una collection.
     try {
       const products = await Product.find(); // id prueba error { _id: '63be4f99954170b25e100f7e' }
+      // console.log(products)
       if (products.length > 0) {
         res.status(200).send(products);
       } else {
@@ -25,6 +26,16 @@ module.exports = {
   },
   getProductByNameOrId: async (req, res, next) => {
     const { productId } = req.params;
+    /* Si el valor de productId es igual a "search", la función busca productos en la
+    base de datos que coincidan con el valor de la consulta search en el objeto req.
+    La búsqueda se realiza usando una expresión regular que hace una coincidencia
+    insensible a mayúsculas y minúsculas ($options: 'i'). */
+    if (productId === 'search') {
+      const { search } = req.query;
+      const searchByName = await Product.find({ name: { $regex: search, $options: 'i' } });
+      return res.status(200).send(searchByName);
+    }
+    // inId: el valor productId es un ID o un nombre de producto?
     const isId = idRegex.test(productId);
     try {
       const product = await findProduct(productId, isId);
@@ -83,7 +94,7 @@ module.exports = {
         { price },
         {
           new: true,
-        }
+        },
       );
       res.status(200).send(update);
     } catch (error) {

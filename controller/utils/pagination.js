@@ -6,10 +6,10 @@ const pagination = (url, page, limit, total) => {
   const nextPage = limit * page < total ? (parseInt(page, 0) + 1) : lastPage;
 
   const link = {
-    first: `<${url}?limit=${limit}&page=1>; rel="first"`,
-    prev: `<${url}?limit=${limit}&page=${prevPage}>; rel="prev"`,
-    next: `<${url}?limit=${limit}&page=${nextPage}>; rel="next"`,
-    last: `<${url}?limit=${limit}&page=${lastPage}>; rel="last"`,
+    first: `${url}?limit=${limit}&page=1`,
+    prev: `${url}?limit=${limit}&page=${prevPage}`,
+    next: `${url}?limit=${limit}&page=${nextPage}`,
+    last: `${url}?limit=${limit}&page=${lastPage}`,
   };
 
   return `${link.first}, ${link.prev}, ${link.next}, ${link.last}`;

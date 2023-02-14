@@ -1,4 +1,4 @@
-const { getProducts, getProductByNameOrId, createProduct, updateProductByIdOrEmail, deleteProductByNameOrId, searchProductByName } = require('../controller/products');
+const { getProducts, getProductByNameOrId, createProduct, updateProductByIdOrEmail, deleteProductByNameOrId } = require('../controller/products');
 const {
   requireAuth,
   requireAdmin,
@@ -123,6 +123,5 @@ module.exports = (app, nextMain) => {
    * @code {500} si existe error el la petición o servidor
    */
   app.delete('/products/:productId', requireAdmin, deleteProductByNameOrId);
-
   nextMain();
 };

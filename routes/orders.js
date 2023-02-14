@@ -92,7 +92,7 @@ module.exports = (app, nextMain) => {
   /**
    * @name PUT /orders
    * @description Modifica una orden
-   * @path {PUT} /products
+   * @path {PUT} /orders
    * @params {String} :orderId `id` de la orden
    * @auth Requiere `token` de autenticación
    * @body {String} [userId] Id usuaria que creó la orden
