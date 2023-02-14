@@ -58,7 +58,17 @@ module.exports = {
 
       const users = await User.find().skip(skip).limit(limit);
       if (users.length > 0) {
-        res.status(200).send(users);
+        res.status(200).send(
+          {
+            count: totalUsers,
+            pages: headerPagination.totalPages,
+            prev: headerPagination.links.prev,
+            next: headerPagination.links.next,
+            first: headerPagination.links.first,
+            last: headerPagination.links.last,
+            users,
+          },
+        );
       } else {
         res.status(404).send({ error: 'No hay usuarios en la DB' });
       }

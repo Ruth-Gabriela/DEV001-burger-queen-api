@@ -33,6 +33,7 @@ module.exports = {
             next: headerPagination.links.next,
             first: headerPagination.links.first,
             last: headerPagination.links.last,
+            products,
           },
         );
       } else {
