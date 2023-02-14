@@ -24,7 +24,17 @@ module.exports = {
 
       const products = await Product.find().skip(skip).limit(limit);
       if (products.length > 0) {
-        res.status(200).send(products);
+        // eslint-disable-next-line max-len
+        res.status(200).send(
+          {
+            count: totalProducts,
+            pages: headerPagination.totalPages,
+            prev: headerPagination.links.prev,
+            next: headerPagination.links.next,
+            first: headerPagination.links.first,
+            last: headerPagination.links.last,
+          },
+        );
       } else {
         res.status(404).send({ message: 'no hay productos en la DB' });
       }
