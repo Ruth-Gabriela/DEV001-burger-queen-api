@@ -51,16 +51,16 @@ module.exports = {
     insensible a mayúsculas y minúsculas ($options: 'i'). */
     if (productId === 'search') {
       const { search } = req.query;
-      const url = `${req.protocol}://${req.get('host')}${req.path}`; 
+      const url = `${req.protocol}://${req.get('host')}${req.path}`;
       const limit = parseInt(req.query.limit, 10) || 10;
       const page = parseInt(req.query.page, 10) || 1;
       const skip = (page - 1) * limit;
       const totalProducts = await Product.count();
       const headerPagination = pagination(url, page, limit, totalProducts);
-      const searchByName = await Product.find({ name: { $regex: search, $options: 'i' } }).skip(skip).limit(limit);
-      if (searchByName.length > 0) {
+      const products = await Product.find({ name: { $regex: search, $options: 'i' } }).skip(skip).limit(limit);
+      if (products.length > 0) {
         // eslint-disable-next-line max-len
-        res.status(200).send(
+        return res.status(200).send(
           {
             count: totalProducts,
             pages: headerPagination.totalPages,
@@ -68,12 +68,11 @@ module.exports = {
             next: headerPagination.links.next,
             first: headerPagination.links.first,
             last: headerPagination.links.last,
-            searchByName,
+            products,
           },
         );
-      } else {
-        res.status(404).send({ message: 'No encontramos productos a su busqueda' });
       }
+      return res.status(404).send({ message: 'No encontramos productos a su busqueda' });
     }
     // inId: el valor productId es un ID o un nombre de producto?
     const isId = idRegex.test(productId);
