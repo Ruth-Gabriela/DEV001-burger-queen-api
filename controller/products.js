@@ -56,7 +56,9 @@ module.exports = {
       const page = parseInt(req.query.page, 10) || 1;
       const skip = (page - 1) * limit;
       const products = await Product.find({ name: { $regex: search, $options: 'i' } }).skip(skip).limit(limit);
-      const totalProducts = products.length;
+      const totalProducts = await Product.countDocuments({
+        name: { $regex: search, $options: 'i' },
+      });
       const headerPagination = pagination(url, page, limit, totalProducts);
       if (products.length > 0) {
         // eslint-disable-next-line max-len
