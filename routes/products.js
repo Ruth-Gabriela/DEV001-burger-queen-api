@@ -51,7 +51,6 @@ module.exports = (app, nextMain) => {
    * @code {500} si existe error el la petición o servidor
    */
   app.get('/products/:productId', requireAuth, getProductByNameOrId);
-
   /**
    * @name POST /products
    * @description Crea un nuevo producto

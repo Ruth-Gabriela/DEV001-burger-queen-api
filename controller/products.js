@@ -76,6 +76,31 @@ module.exports = {
       }
       return res.status(404).send({ message: 'No encontramos productos a su busqueda' });
     }
+    if (productId === 'types') {
+      const { types } = req.query;
+      const url = `${req.protocol}://${req.get('host')}${req.path}`;
+      const limit = parseInt(req.query.limit, 10) || 10;
+      const page = parseInt(req.query.page, 10) || 1;
+      const skip = (page - 1) * limit;
+      const products = await Product.find({ type: types }).skip(skip).limit(limit);
+      const totalProducts = await Product.countDocuments({ type: types });
+      const headerPagination = pagination(url, page, limit, totalProducts);
+      if (products.length > 0) {
+        // eslint-disable-next-line max-len
+        return res.status(200).send(
+          {
+            count: totalProducts,
+            pages: headerPagination.totalPages,
+            prev: headerPagination.links.prev,
+            next: headerPagination.links.next,
+            first: headerPagination.links.first,
+            last: headerPagination.links.last,
+            products,
+          },
+        );
+      }
+      return res.status(404).send({ message: 'No encontramos productos al filtro solicitado' });
+    }
     // inId: el valor productId es un ID o un nombre de producto?
     const isId = idRegex.test(productId);
     try {
