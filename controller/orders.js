@@ -25,7 +25,7 @@ module.exports = {
       const headerPagination = pagination(url, page, limit, totalOrders);
       res.set('link', JSON.stringify(headerPagination));
 
-      const orders = await Order.find().populate('products.productId').skip(skip).limit(limit);
+      const orders = await Order.find().populate('products.productId').sort({ dateEntry: 'desc' }).skip(skip).limit(limit);
       if (orders.length > 0) {
         res.status(200).send(
           {
