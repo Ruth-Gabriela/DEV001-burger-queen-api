@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 const mongoose = require('mongoose');
 
 // Modelo Órdenes creado con mongoose.
@@ -31,7 +32,12 @@ const orderSchema = new mongoose.Schema(
     dateEntry: {
       type: Date,
       required: true,
-      default: Date.now(),
+      // eslint-disable-next-line object-shorthand
+      default: function () {
+        const now = new Date();
+        const timezoneOffset = now.getTimezoneOffset() * 60 * 1000; // Convertir a milisegundos
+        return new Date(now.getTime() - timezoneOffset);
+      },
     },
     dateProcessed: {
       type: Date,
