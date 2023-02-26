@@ -31,6 +31,13 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(authMiddleware(secret));
 
+// Agregar el encabezado Access-Control-Allow-Origin
+// eslint-disable-next-line prefer-arrow-callback
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
 // Registrar rutas
 routes(app, (err) => {
   if (err) {
