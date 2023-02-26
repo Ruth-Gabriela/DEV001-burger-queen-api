@@ -23,8 +23,8 @@ app.set('pkg', pkg);
 // parse application/x-www-form-urlencoded --middleware.
 app.use(cors({
   origin: '*',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
