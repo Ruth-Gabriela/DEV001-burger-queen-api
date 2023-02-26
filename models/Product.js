@@ -24,7 +24,12 @@ const productSchema = new mongoose.Schema(
     dateEntry: {
       type: Date,
       required: true,
-      default: Date.now(),
+      // eslint-disable-next-line object-shorthand, func-names
+      default: function () {
+        const now = new Date();
+        const timezoneOffset = now.getTimezoneOffset() * 60 * 1000; // Convertir a milisegundos
+        return new Date(now.getTime() - timezoneOffset);
+      },
     },
   },
   {
