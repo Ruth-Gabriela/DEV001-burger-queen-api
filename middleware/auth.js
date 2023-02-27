@@ -51,8 +51,19 @@ module.exports.isAdmin = (req) => (
   !!req.user.roles.admin
 );
 
+module.exports.isCocina = (req) => (
+  // TODO: decidir por la informacion del request si la usuaria es cocinera
+  !!req.user.roles.cocina
+);
+
 module.exports.requireAuth = (req, resp, next) => (
   (!module.exports.isAuthenticated(req))
+    ? next(401)
+    : next()
+);
+
+module.exports.requireCocina = (req, resp, next) => (
+  (!module.exports.isCocina(req))
     ? next(401)
     : next()
 );
