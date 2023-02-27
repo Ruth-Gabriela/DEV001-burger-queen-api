@@ -2,6 +2,7 @@ const { getProducts, getProductByNameOrId, createProduct, updateProductByIdOrEma
 const {
   requireAuth,
   requireAdmin,
+  requireCocina,
 } = require('../middleware/auth');
 
 /** @module products */
@@ -74,7 +75,7 @@ module.exports = (app, nextMain) => {
    * @code {403} si el producto ya esta registrado
    * @code {500} si existe error el la petición o servidor
    */
-  app.post('/products', requireAdmin, createProduct);
+  app.post('/products', requireAdmin, requireCocina, createProduct);
 
   /**
    * @name PUT /products
@@ -100,7 +101,7 @@ module.exports = (app, nextMain) => {
    * @code {404} si el producto con `productId` indicado no existe
    * @code {500} si existe error el la petición o servidor
    */
-  app.put('/products/:productId', requireAdmin, updateProductByIdOrEmail);
+  app.put('/products/:productId', requireAdmin, requireCocina, updateProductByIdOrEmail);
 
   /**
    * @name DELETE /products
@@ -121,6 +122,6 @@ module.exports = (app, nextMain) => {
    * @code {404} si el producto con `productId` indicado no existe
    * @code {500} si existe error el la petición o servidor
    */
-  app.delete('/products/:productId', requireAdmin, deleteProductByNameOrId);
+  app.delete('/products/:productId', requireAdmin, requireCocina, deleteProductByNameOrId);
   nextMain();
 };
