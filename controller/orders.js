@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const Order = require('../models/Order');
 const User = require('../models/User');
+const Product = require('../models/Product');
 const config = require('../config');
 const pagination = require('./utils/pagination');
 
@@ -77,8 +78,8 @@ module.exports = {
           product: {
             ...p.productId._doc,
             name:
-            p.productId.name.charAt(0).toUpperCase()
-            + p.productId.name.slice(1),
+              p.productId.name.charAt(0).toUpperCase()
+              + p.productId.name.slice(1),
           },
         })),
       };
@@ -103,8 +104,8 @@ module.exports = {
           product: {
             ...p.productId._doc,
             name:
-            p.productId.name.charAt(0).toUpperCase()
-            + p.productId.name.slice(1),
+              p.productId.name.charAt(0).toUpperCase()
+              + p.productId.name.slice(1),
           },
         })),
       };
@@ -156,6 +157,51 @@ module.exports = {
       }
       await Order.deleteOne({ _id: orderId });
       res.status(200).send(order);
+    } catch (error) {
+      res.status(500).send({ message: error.message });
+    }
+  },
+  getReports: async (req, res, next) => {
+    try {
+      const totalOrders = await Order.count(); // cuenta y devuelve un entero.
+      const totalUsers = await User.count();
+      const totalProducts = await Product.count();
+
+      const ordersPending = await Order.find({ status: 'pending' }).count();
+      const ordersDelivered = await Order.find({ status: 'delivered' }).count();
+
+      const lastUsers = await User.find().sort({ createdAt: -1 }).limit(10);
+      const ordersByDay = await Order.aggregate([
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$dateEntry" } },
+            orders: { $push: "$$ROOT" },
+          },
+        },
+        {
+          $sort: { _id: -1 },
+        },
+        {
+          $project: {
+            _id: 0,
+            dateEntry: "$_id",
+            count: { $size: "$orders" },
+          },
+        },
+      ]);
+
+      if (!totalOrders) {
+        return res.status(404).send({ error: 'error no existe datos' });
+      }
+      res.status(200).send({
+        countOrders: totalOrders,
+        countUsers: totalUsers,
+        countProducts: totalProducts,
+        ordersPending,
+        ordersDelivered,
+        lastUsers,
+        ordersByDay,
+      });
     } catch (error) {
       res.status(500).send({ message: error.message });
     }

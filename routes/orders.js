@@ -1,4 +1,4 @@
-const { getOrders, createOrder, getOrderById, deleteOrderById, updateOrderById } = require('../controller/orders');
+const { getOrders, createOrder, getOrderById, deleteOrderById, updateOrderById, getReports } = require('../controller/orders');
 const {
   requireAuth,
 } = require('../middleware/auth');
@@ -143,6 +143,8 @@ module.exports = (app, nextMain) => {
    * @code {500} si existe error el la petición o servidor
    */
   app.delete('/orders/:orderId', requireAuth, paramOrderId, deleteOrderById);
+
+  app.get('/reports', requireAuth, getReports);
 
   nextMain();
 };
