@@ -154,7 +154,7 @@ module.exports = (app, next) => {
    * @code {404} si la usuaria solicitada no existe
    * @code {500} si existe error el la petición o servidor
    */
-  app.put('/users/:uid', /* requireAuth, */ updateUserByIdOrEmail);
+  app.put('/users/:uid', requireAuth, updateUserByIdOrEmail);
 
   /**
    * @name DELETE /users

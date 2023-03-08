@@ -30,7 +30,7 @@ module.exports = (app, nextMain) => {
    * @code {404} si no hay productos en la base de datos
    * @code {500} si existe error el la petición o servidor
    */
-  app.get('/products', /* requireAuth, */ getProducts);
+  app.get('/products', requireAuth, getProducts);
 
   /**
    * @name GET /products/:productId
